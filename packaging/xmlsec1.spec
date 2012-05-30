@@ -7,6 +7,7 @@ Group:      System/Libraries
 License:    MIT
 URL:        http://www.aleksey.com/xmlsec/index.html
 Source0:    http://www.aleksey.com/xmlsec/download/xmlsec1-%{version}.tar.gz
+Source1001: packaging/xmlsec1.manifest 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(libxml-2.0) >= 2.6.27
@@ -52,6 +53,7 @@ installed.
 
 
 %build
+cp %{SOURCE1001} .
 
 %configure --disable-static \
     --enable-dynamic --disable-crypto-dl --disable-apps-crypto-dl --without-gnutls
@@ -79,6 +81,7 @@ rm -rf %{buildroot}
 
 
 %files
+%manifest xmlsec1.manifest
 %defattr(-,root,root,-)
 %doc Copyright AUTHORS README NEWS ChangeLog
 %{_libdir}/libxmlsec1.so.*
@@ -87,10 +90,12 @@ rm -rf %{buildroot}
 
 
 %files openssl
+%manifest xmlsec1.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libxmlsec1-openssl.so.*
 
 %files devel
+%manifest xmlsec1.manifest
 %defattr(-,root,root,-)
 %doc Copyright ChangeLog AUTHORS README NEWS TODO
 /usr/include/*
