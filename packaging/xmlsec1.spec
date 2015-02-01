@@ -4,6 +4,7 @@ Name:       xmlsec1
 Summary:    Library providing support for "XML Signature" and "XML Encryption" standards
 Version: 1.2.14
 Release:    1
+VCS:        external/xmlsec1#init-SMACK-15-ga01fc22bc33e5b0197262adb9cd7547a324b49f9
 Group:      System/Libraries
 License:    MIT
 URL:        http://www.aleksey.com/xmlsec/index.html
@@ -13,6 +14,7 @@ Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(libxml-2.0) >= 2.6.27
 BuildRequires:  pkgconfig(libxslt)
 BuildRequires:  pkgconfig(openssl)
+
 
 %description
 This C library allows to transform XML files into other XML files
