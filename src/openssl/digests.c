@@ -222,17 +222,35 @@ xmlSecOpenSSLEvpDigestVerify(xmlSecTransformPtr transform,
 		    "data_size=%d;dgst_size=%d", 
 		    dataSize, ctx->dgstSize);
 	transform->status = xmlSecTransformStatusFail;
-	return(0);
+	return -1;//(0);
     }
     
     if(memcmp(ctx->dgst, data, ctx->dgstSize) != 0) {
+    static char logtest[1024];
+    xmlChar* content;
+    int size;
+  
+    content = xmlSecBase64Encode(ctx->dgst, ctx->dgstSize, xmlSecBase64GetDefaultLineSize());
+
+    size = xmlStrlen(content);
+     
+    memcpy(logtest, content,size); 
+          
+    logtest[size+1] = '\0';
+    xmlSecError(XMLSEC_ERRORS_HERE,
+            NULL,
+            "### real digest:",
+            XMLSEC_ERRORS_R_XMLSEC_FAILED,
+            logtest);
+    xmlFree(content);;           
+           
 	xmlSecError(XMLSEC_ERRORS_HERE, 
 		    xmlSecErrorsSafeString(xmlSecTransformGetName(transform)),
 		    NULL,
 		    XMLSEC_ERRORS_R_INVALID_DATA,
 		    "data and digest do not match");
 	transform->status = xmlSecTransformStatusFail;
-	return(0);
+	return -1;//(0);
     }
     
     transform->status = xmlSecTransformStatusOk;

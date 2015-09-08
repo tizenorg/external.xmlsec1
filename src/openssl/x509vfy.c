@@ -333,7 +333,27 @@ xmlSecOpenSSLX509StoreVerify(xmlSecKeyDataStorePtr store, XMLSEC_STACK_OF_X509* 
         if(ret != 1 && keyInfoCtx->flags & XMLSEC_KEYINFO_FLAGS_ALLOW_BROKEN_CHAIN){
             ret = 1;
             keyInfoCtx->flags2 |= XMLSEC_KEYINFO_ERROR_FLAGS_BROKEN_CHAIN;
-        }
+        } else if(ret <= 0){
+        	if(err == X509_V_ERR_CERT_NOT_YET_VALID || err == X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD || err == X509_V_ERR_CERT_HAS_EXPIRED || err == X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD)
+        	{
+			    	const char* err_msg;
+			    	buf[0] = '\0';
+			    	X509_NAME_oneline(X509_get_subject_name(err_cert), buf, sizeof buf);
+			    	err_msg = X509_verify_cert_error_string(err);
+			    	xmlSecError(XMLSEC_ERRORS_HERE,
+			    	xmlSecErrorsSafeString(xmlSecKeyDataStoreGetName(store)),
+			    	"X509_verify_cert ok.ignore time error",
+			    	XMLSEC_ERRORS_MAX_NUMBER,
+		    	 	"subj=%s;err=%d;msg=%s",
+			    	xmlSecErrorsSafeString(buf),
+			    	err,
+			    	xmlSecErrorsSafeString(err_msg));
+						ret = 1;
+						res = cert;
+						goto done;
+			}
+		}
+        
 
 	    if(ret == 1) {
 		res = cert;
@@ -405,7 +425,7 @@ xmlSecOpenSSLX509StoreVerify(xmlSecKeyDataStorePtr store, XMLSEC_STACK_OF_X509* 
 			XMLSEC_ERRORS_R_CERT_HAS_EXPIRED,
 			"err=%d;msg=%s", err,
 			xmlSecErrorsSafeString(err_msg));
-	    break;
+		break;
 	default:			
 	    xmlSecError(XMLSEC_ERRORS_HERE,
 			xmlSecErrorsSafeString(xmlSecKeyDataStoreGetName(store)),

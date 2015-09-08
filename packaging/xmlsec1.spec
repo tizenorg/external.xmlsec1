@@ -4,10 +4,11 @@ Name:       xmlsec1
 Summary:    Library providing support for "XML Signature" and "XML Encryption" standards
 Version: 1.2.14
 Release:    1
+VCS:        external/xmlsec1#init-SMACK-15-ga01fc22bc33e5b0197262adb9cd7547a324b49f9
 Group:      System/Libraries
 License:    MIT
 URL:        http://www.aleksey.com/xmlsec/index.html
-Source0:    http://www.aleksey.com/xmlsec/download/xmlsec1-%{version}.tar.gz
+Source0:    %{name}-%{version}.tar.gz
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(libxml-2.0) >= 2.6.27
@@ -54,6 +55,10 @@ installed.
 
 %build
 
+export GC_SECTIONS_FLAGS="-fdata-sections -ffunction-sections -Wl,--gc-sections"
+export CFLAGS+=" ${GC_SECTIONS_FLAGS}"
+export CXXFLAGS+=" ${GC_SECTIONS_FLAGS}"
+
 %configure --disable-static \
     --enable-dynamic --disable-crypto-dl --disable-apps-crypto-dl --without-gnutls
 
@@ -61,8 +66,10 @@ make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
-%make_install
+mkdir -p %{buildroot}/usr/share/license
+cp COPYING %{buildroot}/usr/share/license/%{name}
 
+%make_install
 
 
 
@@ -80,14 +87,16 @@ rm -rf %{buildroot}
 
 
 %files
+%manifest xmlsec1.manifest
 %defattr(-,root,root,-)
 %doc Copyright AUTHORS README NEWS ChangeLog
 %{_libdir}/libxmlsec1.so.*
 /usr/bin/xmlsec1
 /usr/share/man/man1/xmlsec1.1.gz
-
+/usr/share/license/%{name}
 
 %files openssl
+%manifest xmlsec1.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libxmlsec1-openssl.so.*
 
